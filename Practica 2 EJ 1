@@ -1,0 +1,37 @@
+
+/*  
+
+ 1. Diseñar un programa ensamblador que encienda alternativamente todos los leds rojos 
+    en posiciones pares y todos los leds rojos en posiciones impares de la placa DE2. 
+
+*/
+	
+		.global _start
+
+	_start:
+		movia r1, 0x10000000 	//inicializar los leds rojos
+	
+	INI:
+		ldw r3, ROJOPAR(r0) 	// carga en r3 ROJOPAR es decir, 0x2AAAA
+		stwio r3, 0(r2)		// almacena lo que hay en r3 en la direccion 0+r2 = 0x10000000
+		movia r4, 500000	// guarda 500000 en r4 (inicializar cuenta para el etardo temporal)
+
+	DELAY1:
+		subi r4, r4, 1		// decrementa 1 a 500000
+		bne r4, r0, DELAY1	// salta a DELAY1 si r4 != r0 ; 500000 != 0 (bucle de retardo temporal)
+
+		ldw r3, ROJOIMPAR(r0)	//carga en r3 la direccion 0x15555
+
+		stwio r3, 0(r2)		// guarda en la direccion 0x15555 0+r2 = 0x10000000
+		movia r4, 500000	// guarda 500000 en r4 (retardo temporal)
+
+	DELAY2:
+		subi r4, r4, 1		// decrementa 1 a 500000	
+		bne r4, r0, DELAY2	// salta a DELAY2 si r4 != r0
+		br INI			// salta a INI
+
+
+		.org 0x200
+		ROJOPAR: .word 0x2AAAA
+		ROJOIMPAR: .word 0x15555
+		.end
